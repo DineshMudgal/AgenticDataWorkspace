@@ -2,7 +2,18 @@ import os
 import re
 import datetime
 
-def make_log(level, message, agent_name):
+def make_log(level: str, message: str, agent_name: str) -> dict:
+    """
+    Creates a standardized log dictionary entry.
+
+    Args:
+        level (str): Log severity level (e.g., INFO, WARN, SUCCESS, ERROR).
+        message (str): The log message detail.
+        agent_name (str): The name of the agent generating the log.
+
+    Returns:
+        dict: Mapped log dictionary with timestamp.
+    """
     return {"timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%H:%M:%S"), "level": level, "message": message, "agent_name": agent_name}
 
 import json
@@ -30,6 +41,9 @@ else:
 
 # Define the State definition
 class AgentState(TypedDict):
+    """
+    TypedDict schema definition representing the LangGraph state machine workflow memory.
+    """
     project_id: int
     data_product_id: int
     catalog_name: str
@@ -44,6 +58,7 @@ class AgentState(TypedDict):
     status: str # Idle, Running, Blocked, Completed, Failed
     error_message: Optional[str]
     global_instruction: Optional[str]
+
 
 # LLM Helper function
 def resolve_skill_tools(skill_name: str, default_tool: str) -> tuple[list[str], str, str]:
@@ -82,6 +97,18 @@ def resolve_skill_tools(skill_name: str, default_tool: str) -> tuple[list[str], 
         db.close()
 
 def query_databricks_llm(prompt: str, system_instruction: str = "", endpoint_name: str = None, experiment_id: str = None) -> str:
+    """
+    Queries a Databricks Serving Endpoint with MLflow tracking capability.
+
+    Args:
+        prompt (str): Prompt text.
+        system_instruction (str): Optional system instruction.
+        endpoint_name (str): The Databricks serving endpoint name.
+        experiment_id (str): Optional MLflow Experiment ID to track logs.
+
+    Returns:
+        str: Generated content or mock text fallback.
+    """
     import os
     import requests
     import json
@@ -154,6 +181,16 @@ def query_databricks_llm(prompt: str, system_instruction: str = "", endpoint_nam
         return f"[ERROR] Databricks Serving Endpoint connection failed: {e}"
 
 def query_azure_openai_llm(prompt: str, system_instruction: str = "") -> str:
+    """
+    Queries an Azure OpenAI model serving endpoint.
+
+    Args:
+        prompt (str): User prompt text.
+        system_instruction (str): Optional system prompt instruction.
+
+    Returns:
+        str: Model output text or error messages.
+    """
     api_key = os.getenv("AZURE_OPENAI_API_KEY")
     endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
     deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
@@ -186,6 +223,16 @@ def query_azure_openai_llm(prompt: str, system_instruction: str = "") -> str:
         return f"[ERROR] Azure OpenAI exception: {e}"
 
 def query_azure_foundry_llm(prompt: str, system_instruction: str = "") -> str:
+    """
+    Queries an Azure AI Foundry model endpoint.
+
+    Args:
+        prompt (str): User prompt text.
+        system_instruction (str): Optional system prompt instruction.
+
+    Returns:
+        str: Model output text or error messages.
+    """
     api_key = os.getenv("AZURE_FOUNDRY_API_KEY")
     endpoint = os.getenv("AZURE_FOUNDRY_ENDPOINT")
 
