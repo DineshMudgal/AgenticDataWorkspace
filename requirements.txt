@@ -1,0 +1,10 @@
+fastapi==0.110.0
+uvicorn==0.28.0
+sqlalchemy==2.0.28
+pydantic==2.6.4
+python-dotenv==1.0.1
+langchain==0.1.12
+langgraph==0.0.26
+databricks-sdk==0.21.0
+google-genai==2.6.0
+requests==2.31.0
